@@ -12,28 +12,45 @@ if (!empty($_POST['Email'])) {
     
     $con = mysqli_connect("localhost", "root", "", "assignme");
     if($con) {
-        try {
-            $otp = random_int(1000, 9999);
-        } catch (Exception $e) {
-            $otp = rand(1000, 9999);
-        }
-        $currentTime = date('Y-m-d H:i:s');
-        $sql = "UPDATE users SET reset_password_otp = ?, reset_password_created_at = ? WHERE Email = ?";
-        $stmt = mysqli_prepare($con, $sql);
-        mysqli_stmt_bind_param($stmt, "iss", $otp, $currentTime, $email);
-        $result = mysqli_stmt_execute($stmt);
+        // Query untuk memeriksa apakah email ada dalam database
+        $checkQuery = "SELECT * FROM users WHERE Email = ?";
+        $checkStmt = mysqli_prepare($con, $checkQuery);
+        mysqli_stmt_bind_param($checkStmt, "s", $email);
+        mysqli_stmt_execute($checkStmt);
+        $checkResult = mysqli_stmt_get_result($checkStmt);
+
+        if(mysqli_num_rows($checkResult) > 0) {
+            // Email ditemukan, maka kirim OTP
+            try {
+                $otp = random_int(1000, 9999);
+            } catch (Exception $e) {
+                $otp = rand(1000, 9999);
+            }
+            $currentTime = date('Y-m-d H:i:s');
+            $updateQuery = "UPDATE users SET reset_password_otp = ?, reset_password_created_at = ? WHERE Email = ?";
+            $updateStmt = mysqli_prepare($con, $updateQuery);
+            mysqli_stmt_bind_param($updateStmt, "iss", $otp, $currentTime, $email);
+            $result = mysqli_stmt_execute($updateStmt);
 
             if ($result) {
-            echo "success";
+                echo "success";
+            } else {
+                echo "Failed to update";
+            }
+
+            mysqli_stmt_close($updateStmt);
         } else {
-            echo "Failed to update";
+            // Email tidak ditemukan dalam database
+            echo "Email not found";
         }
 
-        mysqli_stmt_close($stmt);
         mysqli_close($con);
-
-    } else echo "Database connection failed"  . mysqli_connect_error();;
-} else echo "All fields are required";
+    } else {
+        echo "Database connection failed"  . mysqli_connect_error();
+    }
+} else {
+    echo "All fields are required";
+}
 
 
 

@@ -6,7 +6,7 @@ if (!empty($_POST['Email']) && !empty($_POST['newPassword'])) {
     
     $con = mysqli_connect("localhost", "root", "", "assignme");
     if($con) {
-        $sql = "UPDATE users set Password = '".$newPassword."', reset_password_created_at = NOW(), reset_password_otp = '' WHERE Email = '".$email."' ";
+        $sql = "UPDATE users set Password = '".$newPassword."', reset_password_created_at = NOW() WHERE Email = '".$email."' ";
             if(mysqli_query($con, $sql)){
                 if (mysqli_affected_rows($con)){
                     echo "success";
