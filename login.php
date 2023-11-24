@@ -1,5 +1,6 @@
 <?php
 //login.php
+
 if(!empty($_POST['Email']) && !empty($_POST['Password'])){
     $email = $_POST['Email'];
     $password = $_POST['Password'];

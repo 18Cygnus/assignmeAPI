@@ -22,16 +22,15 @@ if (!empty($_POST['Email'])) {
         if(mysqli_num_rows($checkResult) > 0) {
             // Email ditemukan, maka kirim OTP
             try {
-                $otp = random_int(1000, 9999);
+                $otp = random_int(100000, 999999);
             } catch (Exception $e) {
-                $otp = rand(1000, 9999);
+                $otp = rand(100000, 999999);
             }
             $currentTime = date('Y-m-d H:i:s');
             $updateQuery = "UPDATE users SET reset_password_otp = ?, reset_password_created_at = ? WHERE Email = ?";
             $updateStmt = mysqli_prepare($con, $updateQuery);
             mysqli_stmt_bind_param($updateStmt, "iss", $otp, $currentTime, $email);
             $result = mysqli_stmt_execute($updateStmt);
-
             if ($result) {
                 echo "success";
             } else {
@@ -40,7 +39,6 @@ if (!empty($_POST['Email'])) {
 
             mysqli_stmt_close($updateStmt);
         } else {
-            // Email tidak ditemukan dalam database
             echo "Email not found";
         }
 
@@ -51,6 +49,8 @@ if (!empty($_POST['Email'])) {
 } else {
     echo "All fields are required";
 }
+
+
 
 
 

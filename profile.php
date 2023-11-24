@@ -1,9 +1,8 @@
 <?php
 //profile.php
-if(!empty($_POST['Email']) && !empty($_POST['apiKey']) && !empty($_POST['apiKey'])){
+if(!empty($_POST['Email']) && !empty($_POST['apiKey']) ){
     $email = $_POST['Email'];
     $apiKey = $_POST['apiKey'];
-    $username = $_POST['Username'];
     $result = array();
     $con = mysqli_connect("localhost", "root", "", "assignme");
     if($con){
