@@ -7,7 +7,7 @@ if (!empty($_POST['Email']) && !empty($_POST['apiKey'])) {
     $email = $_POST['Email'];
     $apiKey = $_POST['apiKey'];
     $result = array();
-    $con = mysqli_connect("localhost", "root", "", "assignme1");
+    $con = mysqli_connect("localhost", "root", "", "assignme");
 
     if ($con) {
 
