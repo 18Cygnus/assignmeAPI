@@ -1,11 +1,15 @@
 <?php
 //setting.php
+require_once 'connection/connection.php';
+
 if (!empty($_POST['Email']) && !empty($_POST['apiKey'])) {
     $email = $_POST['Email'];
     $apiKey = $_POST['apiKey'];
     $result = array();
-    $con = mysqli_connect("localhost", "root", "", "assignme");
 
+    $connection = new Connect(); // Membuat instance dari kelas Connect
+    $con = $connection->dbConn();
+    
     if ($con) {
         // Menggunakan prepared statement untuk mencegah SQL injection
         $sql = "SELECT Username, Email FROM users WHERE Email = ? AND apiKey = ?";

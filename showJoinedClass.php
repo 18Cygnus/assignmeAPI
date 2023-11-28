@@ -1,42 +1,48 @@
 <?php
-//showJoinedClass.php
+require_once 'connection/connection.php'; // Panggil file connection.php
 
 $result = array();
+$connection = new Connect(); // Buat instance dari kelas Connect
+$con = $connection->dbConn(); // Panggil method dbConn untuk koneksi ke database
 
-$con = mysqli_connect("localhost", "root", "", "assignme");
-if ($con->connect_error) {
-    die("Koneksi gagal: " . $con->connect_error);
-}
+if ($con) {
+    $email = $_POST['Email'];
 
-$email = $_POST['Email'];
+    // Query untuk mendapatkan UserId berdasarkan Email dari tabel users
+    $sqlUserId = "SELECT UserId FROM users WHERE Email = ?";
+    $stmtUserId = mysqli_prepare($con, $sqlUserId);
+    mysqli_stmt_bind_param($stmtUserId, "s", $email);
+    mysqli_stmt_execute($stmtUserId);
+    $resultUserId = mysqli_stmt_get_result($stmtUserId);
 
-// Query untuk mendapatkan UserId berdasarkan Email dari tabel users
-$sqlUserId = "SELECT UserId FROM users WHERE Email = '$email'";
-$resultUserId = $con->query($sqlUserId);
+    if (mysqli_num_rows($resultUserId) > 0) {
+        $row = mysqli_fetch_assoc($resultUserId);
+        $userId = $row['UserId'];
 
-if ($resultUserId->num_rows > 0) {
-    $row = $resultUserId->fetch_assoc();
-    $userId = $row['UserId'];
-    // Query untuk mendapatkan daftar kelas yang di-join oleh pengguna berdasarkan UserId
-    $sql = "SELECT classes.ClassId, classes.ClassName, classes.SubjectName FROM user_classes
-            JOIN classes ON user_classes.ClassId = classes.ClassId
-            WHERE user_classes.UserId = '$userId'";
-    $result = $con->query($sql);
+        // Query untuk mendapatkan daftar kelas yang di-join oleh pengguna berdasarkan UserId
+        $sql = "SELECT classes.ClassId, classes.ClassName, classes.SubjectName FROM user_classes
+                JOIN classes ON user_classes.ClassId = classes.ClassId
+                WHERE user_classes.UserId = ?";
+        $stmt = mysqli_prepare($con, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $userId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
 
-    if ($result->num_rows > 0) {
-        $userClasses = array();
-        while ($row = $result->fetch_assoc()) {
-            $userClasses[] = $row;
+        if (mysqli_num_rows($result) > 0) {
+            $userClasses = array();
+            while ($row = mysqli_fetch_assoc($result)) {
+                $userClasses[] = $row;
+            }
+            echo json_encode(array("userClasses" => $userClasses));
+        } else {
+            echo "0 results";
         }
-        echo json_encode(array("userClasses" => $userClasses));
     } else {
-        echo "0 results";
+        echo "UserId not found for this Email";
     }
 } else {
-    echo "UserId not found for this Email";
+    echo "Database connection failed";
 }
 
 $con->close();
-
-echo json_encode($result, JSON_PRETTY_PRINT);
 ?>

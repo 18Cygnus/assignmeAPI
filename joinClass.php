@@ -1,13 +1,14 @@
 <?php
-//joinClassTest
+include 'connection/connection.php';
+
 if (!empty($_POST['ClassCode']) && !empty($_POST['Email'])) {
     $classCode = $_POST['ClassCode'];
     $email = $_POST['Email'];
     $result = array();
-    $con = mysqli_connect("localhost", "root", "", "assignme");
 
+    $connectionObj = new Connect(); // Membuat objek Connect
+    $con = $connectionObj->dbConn();
     if ($con) {
-        // Menggunakan prepared statement untuk mencegah SQL injection
         $sql = "SELECT UserId FROM users WHERE Email = ?";
         $stmt = mysqli_prepare($con, $sql);
 
@@ -19,7 +20,6 @@ if (!empty($_POST['ClassCode']) && !empty($_POST['Email'])) {
             $userRow = mysqli_fetch_assoc($res);
             $userId = $userRow['UserId'];
 
-            // Check if the class code exists in the classes table
             $checkClassQuery = "SELECT ClassId FROM classes WHERE ClassCode = ?";
             $stmtCheckClass = mysqli_prepare($con, $checkClassQuery);
             mysqli_stmt_bind_param($stmtCheckClass, "s", $classCode);
@@ -27,7 +27,6 @@ if (!empty($_POST['ClassCode']) && !empty($_POST['Email'])) {
             $resCheckClass = mysqli_stmt_get_result($stmtCheckClass);
 
             if (mysqli_num_rows($resCheckClass) != 0) {
-                // Check if the user is already enrolled in the class
                 $checkEnrollmentQuery = "SELECT * FROM user_classes WHERE UserId = ? AND ClassId = (SELECT ClassId FROM classes WHERE ClassCode = ?)";
                 $stmtCheckEnrollment = mysqli_prepare($con, $checkEnrollmentQuery);
                 mysqli_stmt_bind_param($stmtCheckEnrollment, "is", $userId, $classCode);
@@ -35,13 +34,10 @@ if (!empty($_POST['ClassCode']) && !empty($_POST['Email'])) {
                 $resCheckEnrollment = mysqli_stmt_get_result($stmtCheckEnrollment);
 
                 if (mysqli_num_rows($resCheckEnrollment) == 0) {
-                    // Update table user_classes
-                    $role = "Siswa";
-                    $updateQuery = "INSERT INTO user_classes (UserId, ClassId, Role) VALUES (?, (SELECT ClassId FROM classes WHERE ClassCode = ?), ?)";
+                    $updateQuery = "INSERT INTO user_classes (UserId, ClassId) VALUES (?, (SELECT ClassId FROM classes WHERE ClassCode = ?))";
                     $stmtUpdate = mysqli_prepare($con, $updateQuery);
-                    mysqli_stmt_bind_param($stmtUpdate, "iss", $userId, $classCode, $role);
+                    mysqli_stmt_bind_param($stmtUpdate, "is", $userId, $classCode);
                     
-                    // Eksekusi pernyataan update
                     if (mysqli_stmt_execute($stmtUpdate)) {
                         $classInfoQuery = "SELECT ClassName, SubjectName FROM classes WHERE ClassCode = ?";
                         $stmtClassInfo = mysqli_prepare($con, $classInfoQuery);

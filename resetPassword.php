@@ -6,11 +6,14 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 require "vendor/autoload.php";*/
+require_once 'connection/connection.php';
 
 if (!empty($_POST['Email'])) {
     $email = $_POST['Email'];
     
-    $con = mysqli_connect("localhost", "root", "", "assignme");
+    $connection = new Connect(); // Membuat instance dari kelas Connect
+    $con = $connection->dbConn(); 
+    
     if($con) {
         // Query untuk memeriksa apakah email ada dalam database
         $checkQuery = "SELECT * FROM users WHERE Email = ?";
