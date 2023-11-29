@@ -1,5 +1,5 @@
 <?php
-require_once 'connection/connection.php'; // Panggil file connection.php
+require_once 'connection/connection.php';
 
 $result = array();
 $connection = new Connect(); // Buat instance dari kelas Connect
