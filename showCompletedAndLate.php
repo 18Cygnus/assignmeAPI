@@ -23,8 +23,9 @@ if ($con) {
         // Modify your query to filter tasks based on UserId
         $sql = "SELECT ts.*, t.TaskName, t.TaskDesc, t.DueDate
                 FROM users u
-                JOIN task_submits ts ON u.UserId = ts.UserId
-                JOIN tasks t ON ts.TaskId = t.TaskId
+                JOIN user_classes uc ON u.UserId = uc.UserId
+                JOIN tasks t ON uc.ClassId = t.ClassId
+                LEFT JOIN task_submits ts ON u.UserId = ts.UserId AND ts.TaskId = t.TaskId
                 WHERE u.Email = ?
                 AND ts.SubmitDate > t.DueDate";         
         $stmt = mysqli_prepare($con, $sql);

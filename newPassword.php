@@ -1,5 +1,5 @@
 <?php
-require_once 'connection/connection.php'; // Panggil file connection.php
+require_once 'connection/connection.php'; // Panggil file connection.php 
 
 if (!empty($_POST['Email']) && !empty($_POST['newPassword'])) {
     $email = $_POST['Email'];
@@ -26,7 +26,7 @@ if (!empty($_POST['Email']) && !empty($_POST['newPassword'])) {
                 echo "New password cannot be the same as the old one";
             } else {
                 // Mengupdate password jika berbeda
-                $sql = "UPDATE users SET Password = ?, reset_password_created_at = NOW() WHERE Email = ?";
+                $sql = "UPDATE users SET Password = ? WHERE Email = ?";
                 $stmt = mysqli_prepare($con, $sql);
                 mysqli_stmt_bind_param($stmt, "ss", $newPassword, $email);
                 

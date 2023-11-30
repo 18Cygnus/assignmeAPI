@@ -21,13 +21,19 @@ if ($con) {
 
         // Query untuk mendapatkan daftar tugas yang tidak dikumpulkan dan terlambat dari kelas yang di-join oleh pengguna berdasarkan UserId 
     
-        $sql = "SELECT tasks.TaskId, tasks.TaskName, tasks.TaskDesc, tasks.DueDate
-        FROM tasks
-        LEFT JOIN task_submits ON tasks.TaskId = task_submits.TaskId
-        JOIN user_classes ON user_classes.ClassId = tasks.ClassId
-        WHERE user_classes.UserId = ? AND (task_submits.SubmitId IS NULL AND tasks.DueDate < NOW());";       
+        $sql = "SELECT t.TaskId, t.TaskName, t.TaskDesc, t.DueDate
+                FROM tasks t
+                INNER JOIN user_classes uc ON t.ClassId = uc.ClassId
+                LEFT JOIN (
+                    SELECT TaskId
+                    FROM task_submits
+                    WHERE UserId = ? -- Ganti dengan UserId yang ingin Anda periksa
+                ) ts ON t.TaskId = ts.TaskId
+                WHERE uc.UserId = ? -- Ganti dengan UserId yang ingin Anda periksa
+                AND ts.TaskId IS NULL
+                AND t.DueDate < CURRENT_DATE()";       
         $stmt = mysqli_prepare($con, $sql);
-        mysqli_stmt_bind_param($stmt, "i", $userId);
+        mysqli_stmt_bind_param($stmt, "ii", $userId, $userId);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
 
