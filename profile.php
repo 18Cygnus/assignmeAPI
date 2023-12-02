@@ -16,11 +16,17 @@ if(!empty($_POST['Email']) && !empty($_POST['apiKey']) ){
         mysqli_stmt_execute($stmt);
         $res = mysqli_stmt_get_result($stmt);
 
-        if (mysqli_num_rows($res) != 0){
+        if (mysqli_num_rows($res) != 0) {
             $row = mysqli_fetch_assoc($res);
-            $result = $row['Username'];
+            $result = array(
+                "status" => "Success",
+                "data" => array(
+                    "Username" => $row['Username'],
+                    "Gender" => $row['Gender']
+                )
+            );
         } else {
-            $result = array("status"=>"Failed", "message"=>"Unauthorized access");
+            $result = array("status" => "Failed", "message" => "Unauthorized access");
         }
     } else {
         $result = array("status"=>"Failed", "message"=>"Database connection failed");

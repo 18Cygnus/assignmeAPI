@@ -1,4 +1,5 @@
 <?php
+//showTodo
 require_once 'connection/connection.php';
 
 $result = array();
@@ -17,7 +18,7 @@ if ($con) {
 
     if (mysqli_num_rows($resultUserId) > 0) {
         $row = mysqli_fetch_assoc($resultUserId);
-        $userId = $row['UserId'];
+        $userId = $row['UserId']; 
 
         
         // Query untuk mendapatkan daftar kelas yang di-join oleh pengguna berdasarkan UserId
