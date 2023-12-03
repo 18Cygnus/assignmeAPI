@@ -1,0 +1,57 @@
+<?php
+require_once('connection/connection.php'); 
+
+$response = array();
+$connect = new Connect();
+$con = $connect->dbConn();
+
+if (isset($_POST['ClassId']) && !empty($_POST['ClassId'])) {
+    $classId = $_POST['ClassId'];
+    
+    // Perform proper sanitation/validation for $classId
+    // Here's an example with mysqli_real_escape_string for basic protection
+    $classId = mysqli_real_escape_string($con, $classId);
+
+    $sql = "SELECT *
+            FROM users
+            JOIN user_classes ON users.UserId = user_classes.UserId
+            WHERE user_classes.ClassId = '$classId' AND users.Role = 'Siswa'";
+    $result = $con->query($sql);
+
+    if ($result) {
+        if ($result->num_rows > 0) {
+            $response['students'] = array();
+    
+            while ($row = $result->fetch_assoc()) {
+                $student = array(
+                    'userId' => intval($row['UserId']), // Sesuaikan dengan kunci yang diharapkan
+                    'userName' => $row['Username'] 
+                );
+    
+                $response['students'][] = $student;
+            }
+    
+            // Output the JSON response
+            echo json_encode($response, JSON_PRETTY_PRINT);
+        } else {
+            $response['students'] = array(); // To ensure an empty array is present
+    
+            // Rest of your error handling for no tasks found
+            $response['status'] = "error";
+            $response['message'] = "No tasks found for this ClassId";
+    
+            // Output the JSON response
+            echo json_encode($response, JSON_PRETTY_PRINT);
+        }
+    } else {
+        // Rest of your error handling for database error
+        $response['status'] = "error";
+        $response['message'] = "Database error: " . mysqli_error($con);
+    
+        // Output the JSON response
+        echo json_encode($response, JSON_PRETTY_PRINT);
+    }
+}
+
+mysqli_close($con);
+?>
