@@ -1,5 +1,5 @@
 <?php
-require_once('connection/connection.php'); 
+require_once('connection/connection.php');
 
 $response = array();
 $connect = new Connect();
@@ -12,33 +12,32 @@ if (isset($_POST['ClassId']) && !empty($_POST['ClassId'])) {
     // Here's an example with mysqli_real_escape_string for basic protection
     $classId = mysqli_real_escape_string($con, $classId);
 
-    $sql = "SELECT *
-            FROM users
+    $sql = "SELECT * FROM users
             JOIN user_classes ON users.UserId = user_classes.UserId
-            WHERE user_classes.ClassId = '$classId' AND users.Role = 'Siswa'";
+            WHERE user_classes.ClassId = '$classId' AND users.Role = 'Guru'";
     $result = $con->query($sql);
 
     if ($result) {
         if ($result->num_rows > 0) {
-            $response['students'] = array();
+            $response['teachers'] = array();
     
             while ($row = $result->fetch_assoc()) {
-                $student = array(
+                $teacher = array( // Ganti 'task' menjadi 'material' untuk sesuai dengan struktur yang diharapkan
                     'userId' => intval($row['UserId']), // Sesuaikan dengan kunci yang diharapkan
-                    'userName' => $row['Username'] 
+                    'userName' => $row['Username'] // Sesuaikan dengan kunci yang diharapkan
                 );
     
-                $response['students'][] = $student;
+                $response['teachers'][] = $teacher;
             }
     
             // Output the JSON response
             echo json_encode($response, JSON_PRETTY_PRINT);
         } else {
-            $response['students'] = array(); // To ensure an empty array is present
+            $response['teachers'] = array(); // To ensure an empty array is present
     
-            // Rest of your error handling for no tasks found
+            // Rest of your error handling for no materials found
             $response['status'] = "error";
-            $response['message'] = "No tasks found for this ClassId";
+            $response['message'] = "No materials found for this ClassId";
     
             // Output the JSON response
             echo json_encode($response, JSON_PRETTY_PRINT);

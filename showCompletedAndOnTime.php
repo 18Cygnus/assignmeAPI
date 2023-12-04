@@ -21,7 +21,7 @@ if ($con) {
         $userId = $row['UserId'];
     
         // Modify your query to filter tasks based on UserId
-        $sql = "SELECT ts.*, t.TaskName, t.TaskDesc, t.DueDate
+        $sql = "SELECT ts.*, t.TaskName, t.TaskDesc, t.DueDate, t.ClassId, t.Attachment
                 FROM users u
                 JOIN user_classes uc ON u.UserId = uc.UserId
                 JOIN tasks t ON uc.ClassId = t.ClassId

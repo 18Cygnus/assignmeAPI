@@ -23,7 +23,7 @@ if ($con) {
         
         // Query untuk mendapatkan daftar kelas yang di-join oleh pengguna berdasarkan UserId
     
-        $sql = "SELECT tasks.TaskId, tasks.TaskName, tasks.TaskDesc, tasks.DueDate
+        $sql = "SELECT tasks.TaskId, tasks.ClassId, tasks.TaskName, tasks.TaskDesc, tasks.DueDate, tasks.Attachment
         FROM tasks
         LEFT JOIN task_submits ON tasks.TaskId = task_submits.TaskId
         JOIN user_classes ON user_classes.ClassId = tasks.ClassId

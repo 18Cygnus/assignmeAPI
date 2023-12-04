@@ -21,7 +21,7 @@ if ($con) {
 
         // Query untuk mendapatkan daftar tugas yang tidak dikumpulkan dan terlambat dari kelas yang di-join oleh pengguna berdasarkan UserId 
     
-        $sql = "SELECT t.TaskId, t.TaskName, t.TaskDesc, t.DueDate
+        $sql = "SELECT t.TaskId, t.TaskName, t.TaskDesc, t.DueDate, t.ClassId, t.Attachment
                 FROM tasks t
                 INNER JOIN user_classes uc ON t.ClassId = uc.ClassId
                 LEFT JOIN (

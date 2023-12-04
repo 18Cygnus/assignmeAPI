@@ -24,7 +24,9 @@ if (isset($_POST['ClassId']) && !empty($_POST['ClassId'])) {
                     'taskId' => intval($row['TaskId']),
                     'taskName' => $row['TaskName'],
                     'taskDesc' => $row['TaskDesc'],
-                    'dueDate' => $row['DueDate']
+                    'dueDate' => $row['DueDate'],
+                    'ClassId' => $row['ClassId'],
+                    'attachment' => $row['Attachment']
                 );
     
                 $response['tasks'][] = $task;
