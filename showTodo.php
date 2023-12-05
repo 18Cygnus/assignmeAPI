@@ -20,15 +20,26 @@ if ($con) {
         $row = mysqli_fetch_assoc($resultUserId);
         $userId = $row['UserId']; 
 
-        
         // Query untuk mendapatkan daftar kelas yang di-join oleh pengguna berdasarkan UserId
     
-        $sql = "SELECT tasks.TaskId, tasks.ClassId, tasks.TaskName, tasks.TaskDesc, tasks.DueDate, tasks.Attachment
-        FROM tasks
-        LEFT JOIN task_submits ON tasks.TaskId = task_submits.TaskId
-        JOIN user_classes ON user_classes.ClassId = tasks.ClassId
-        WHERE user_classes.UserId = ? AND task_submits.SubmitId IS NULL AND tasks.DueDate > NOW();
-        ";       
+        $sql = "SELECT 
+        t.TaskId,
+        t.TaskName,
+        t.TaskDesc,
+        t.DueDate,
+        t.Attachment
+    FROM 
+        tasks t
+    JOIN 
+        user_classes uc ON t.ClassId = uc.ClassId
+    JOIN 
+        users u ON uc.UserId = u.UserId
+    LEFT JOIN 
+        task_submits ts ON t.TaskId = ts.TaskId AND u.UserId = ts.UserId
+    WHERE 
+        ts.SubmitId IS NULL 
+        AND t.DueDate > NOW()
+        AND u.UserId = ?";       
         $stmt = mysqli_prepare($con, $sql);
         mysqli_stmt_bind_param($stmt, "i", $userId);
         mysqli_stmt_execute($stmt);
