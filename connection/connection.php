@@ -4,7 +4,7 @@ class Connect {
     private $host;
     private $user;
     private $pass;
-    private $db;
+    private $db; 
     
     public function dbConn() {
         $this->host = "localhost";
