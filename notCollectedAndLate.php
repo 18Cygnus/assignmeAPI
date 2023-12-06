@@ -1,4 +1,5 @@
 <?php
+//showTodo
 require_once 'connection/connection.php';
 
 $result = array();
@@ -17,23 +18,30 @@ if ($con) {
 
     if (mysqli_num_rows($resultUserId) > 0) {
         $row = mysqli_fetch_assoc($resultUserId);
-        $userId = $row['UserId'];
+        $userId = $row['UserId']; 
 
-        // Query untuk mendapatkan daftar tugas yang tidak dikumpulkan dan terlambat dari kelas yang di-join oleh pengguna berdasarkan UserId 
+        // Query untuk mendapatkan daftar kelas yang di-join oleh pengguna berdasarkan UserId
     
-        $sql = "SELECT t.TaskId, t.TaskName, t.TaskDesc, t.DueDate, t.ClassId, t.Attachment
-                FROM tasks t
-                INNER JOIN user_classes uc ON t.ClassId = uc.ClassId
-                LEFT JOIN (
-                    SELECT TaskId
-                    FROM task_submits
-                    WHERE UserId = ? -- Ganti dengan UserId yang ingin Anda periksa
-                ) ts ON t.TaskId = ts.TaskId
-                WHERE uc.UserId = ? -- Ganti dengan UserId yang ingin Anda periksa
-                AND ts.TaskId IS NULL
-                AND t.DueDate < CURRENT_DATE()";       
+        $sql = "SELECT 
+        t.TaskId,
+        t.TaskName,
+        t.TaskDesc,
+        t.DueDate,
+        t.Attachment
+    FROM 
+        tasks t
+    JOIN 
+        user_classes uc ON t.ClassId = uc.ClassId
+    JOIN 
+        users u ON uc.UserId = u.UserId
+    LEFT JOIN 
+        task_submits ts ON t.TaskId = ts.TaskId AND u.UserId = ts.UserId
+    WHERE 
+        ts.SubmitId IS NULL 
+        AND t.DueDate < NOW()
+        AND u.UserId = ?";       
         $stmt = mysqli_prepare($con, $sql);
-        mysqli_stmt_bind_param($stmt, "ii", $userId, $userId);
+        mysqli_stmt_bind_param($stmt, "i", $userId);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
 
